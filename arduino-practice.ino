@@ -1,9 +1,13 @@
-void setup() {
-  // put your setup code here, to run once:
+// Pin 13 has an LED connected on most Arduino boards.
+int led = 13;
 
+void setup() {
+  pinMode(led, OUTPUT);
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
-
+  digitalWrite(led, HIGH);
+  delay(2000);
+  digitalWrite(led, LOW);
+  delay(200);
 }
