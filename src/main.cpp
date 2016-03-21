@@ -1,6 +1,10 @@
 #include "Arduino.h"
 
-constexpr uint8_t button = 2, led = 13;
+namespace {
+  constexpr uint8_t button = 2, led = 13;
+  int counter = 0;
+  bool buttonState = false;
+}
 
 void setup() {
   pinMode(button, INPUT);
@@ -9,8 +13,13 @@ void setup() {
 }
 
 void loop() {
-  auto val = digitalRead(button);
-  digitalWrite(led, val ? HIGH : LOW);
-  Serial.println(val);
+  auto newState = digitalRead(button) != 0;
+  if (!buttonState && newState) { ++counter; }
+  buttonState = newState;
+
+  // Output
+  digitalWrite(led, newState ? HIGH : LOW);
+  Serial.println(counter);
+
   delay(20);
 }
