@@ -1,4 +1,4 @@
-int x = 0;
+#include "Arduino.h"
 
 void setup() {
   Serial.begin(9600);
@@ -8,7 +8,7 @@ void loop() {
   // print labels
   Serial.println("NO FMT\tDEC\tHEX\tOCT\tBIN");
 
-  for (x = 0; x < 64; ++x) {
+  for (auto x = 0; x < 64; ++x) {
     Serial.print(x);
     Serial.print("\t");
 
