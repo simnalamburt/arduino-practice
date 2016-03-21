@@ -1,7 +1,7 @@
 Arduino Practice
 ========
-
+Please use [PlatformIO](http://platformio.org/) to build and execute project.
 ```bash
-# Install PlatformIO
-brew install platformio
+# Build project and upload to connected Arduino machine
+platformio run
 ```
