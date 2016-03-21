@@ -1,13 +1,29 @@
-// Pin 13 has an LED connected on most Arduino boards.
-int led = 13;
+int x = 0;
 
 void setup() {
-  pinMode(led, OUTPUT);
+  Serial.begin(9600);
 }
 
 void loop() {
-  digitalWrite(led, HIGH);
-  delay(2000);
-  digitalWrite(led, LOW);
-  delay(200);
+  // print labels
+  Serial.println("NO FMT\tDEC\tHEX\tOCT\tBIN");
+
+  for (x = 0; x < 64; ++x) {
+    Serial.print(x);
+    Serial.print("\t");
+
+    Serial.print(x, DEC);
+    Serial.print("\t");
+
+    Serial.print(x, HEX);
+    Serial.print("\t");
+
+    Serial.print(x, OCT);
+    Serial.print("\t");
+
+    Serial.println(x, BIN);
+
+    delay(200);
+  }
+  Serial.println("");
 }
