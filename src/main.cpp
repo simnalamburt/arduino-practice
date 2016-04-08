@@ -28,27 +28,27 @@ void loop() {
   right.onLoop();
 
   // Update mode
-  if (left.clicked()) { mode.dec(); }
-  if (right.clicked()) { mode.inc(); }
+  if (left.clicked()) { --mode; }
+  if (right.clicked()) { ++mode; }
 
   // Get the value of potentiometer
   const auto vel = meter.read();
 
   // Turn off all LEDs on mode 0
   switch (mode) {
-  case 1:
+  case 0:
     // TODO: 회전화면서 빛이 켜짐. 포텐시오미터로 속도를 조절함
     for (auto led: LEDs) { digitalWrite(led, LOW); }
     break;
-  case 2:
+  case 1:
     // TODO: 하트가 깜빡깜빡거림. 포텐시오미터로 속도를 조절함
     for (auto led: LEDs) { digitalWrite(led, LOW); }
     break;
-  case 3:
+  case 2:
     // 전부 끔
     for (auto led: LEDs) { digitalWrite(led, LOW); }
     break;
-  case 4:
+  case 3:
     // 전부 켬
     for (auto led: LEDs) { digitalWrite(led, HIGH); }
     break;
