@@ -13,7 +13,7 @@
 //     void loop() {
 //       ani.onLoop();      // Must be called in every loop
 //
-//       const auto current = ani.get(); // Get current *pos*
+//       const auto current = ani.pos; // Get current *pos*
 //
 //       /* Do your jobs here... */
 //     }
@@ -33,27 +33,34 @@ struct Animator {
   using type = double;
 
 private:
-  type pos = 0.0;
+  type _pos = 0.0;
   type _speed; // Should be initialized with `period` field
   decltype(millis()) prevMillis = millis();
 
   struct Period {
     type& speed;
-    Period(type& ref): speed(ref) { }
+    explicit Period(type& ref): speed(ref) { }
     type operator=(type period) { return speed = 1.0/period; }
     operator type() const { return 1.0/speed; }
   };
 
   struct Speed {
     type& speed;
-    Speed(type& ref): speed(ref) { }
+    explicit Speed(type& ref): speed(ref) { }
     type operator=(type given) { return speed = given; }
     operator type() const { return speed; }
+  };
+
+  struct Pos {
+    type& pos;
+    explicit Pos(type& ref): pos(ref) { }
+    operator type() const { return pos; }
   };
 
 public:
   Period period { _speed };
   Speed speed { _speed };
+  Pos pos { _pos };
 
   explicit Animator(type initial_period = 2.0) {
     period = initial_period;
@@ -64,10 +71,10 @@ public:
     const auto delta = double(currentMillis - prevMillis) / 1000.0;
     prevMillis = currentMillis;
 
-    pos += _speed * delta;
+    _pos += _speed * delta;
 
-    if (pos >= 1.0) { pos -= floor(pos); }
+    if (_pos >= 1.0) { _pos -= floor(_pos); }
   }
 
-  type get() const { return pos; }
+  type get() const { return _pos; }
 };

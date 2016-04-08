@@ -64,5 +64,5 @@ void loop() {
   Serial.print(" \tMode: ");
   Serial.print(mode);
   Serial.print(" \tPos: ");
-  Serial.println(anime.get());
+  Serial.println(anime.pos);
 }
