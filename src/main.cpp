@@ -39,8 +39,8 @@ void loop() {
   if (right.clicked()) { ++mode; }
 
   // Use the value of potentiometer as a speed of the animation. The speed will
-  // be a double ∈ [0.3, 1.5)
-  anime.speed = 1.2 * meter.get() + 0.3;
+  // be a double ∈ [0.7, 3.1)
+  anime.speed = 2.4 * meter.get() + 0.7;
 
   // 모드별로 동작이 다르다
   //
@@ -65,7 +65,8 @@ void loop() {
     break; }
   case 1: {
     const auto pos = anime.pos;
-    const auto state = 0.0 <= pos && pos < 0.15 || 0.25 <= pos && pos < 0.33 ? HIGH : LOW;
+    const auto state = (0.00 <= pos && pos < 0.15) ||
+                       (0.25 <= pos && pos < 0.33) ? HIGH : LOW;
     for (const auto led: LEDs) { digitalWrite(led, state); }
     break; }
   case 2:
