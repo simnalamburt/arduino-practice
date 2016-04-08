@@ -1,14 +1,15 @@
 #include "mode.hh"
+#include "animator.hh"
 #include "analog_button.hh"
 #include "potentiometer.hh"
 #include "Arduino.h"
 
 namespace {
+  Mode<4> mode;
+  Animator anime;
+
   // Digital pin numbers of connected LEDs
   constexpr uint8_t LEDs[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-
-  // Internal state of this program
-  Mode<4> mode;
 
   // Input hardwares
   Potentiometer<A0> meter;
@@ -24,15 +25,18 @@ void setup() {
 
 void loop() {
   // Need to be called once a every loop
+  anime.onLoop();
   left.onLoop();
   right.onLoop();
+
 
   // Update mode
   if (left.clicked()) { --mode; }
   if (right.clicked()) { ++mode; }
 
-  // Get the value of potentiometer
-  const auto vel = meter.read();
+  // Use the value of potentiometer as a period of the animation
+  // The period will be a double ∈ [0.2, 2.5)
+  anime.period = 2.3 * meter.get() + 0.2;
 
   // Turn off all LEDs on mode 0
   switch (mode) {
@@ -54,12 +58,11 @@ void loop() {
     break;
   }
 
-  // Debug purpose
-  Serial.print("Potentiometer: ");
-  Serial.print(vel);
+  // TODO: Remove debug codes
+  Serial.print("Period: ");
+  Serial.print(anime.period);
   Serial.print(" \tMode: ");
-  Serial.println(mode);
-
-  // Framerate
-  delay(20);
+  Serial.print(mode);
+  Serial.print(" \tPos: ");
+  Serial.println(anime.get());
 }
