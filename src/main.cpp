@@ -42,10 +42,14 @@ void loop() {
   // be a double ∈ [0.3, 1.5)
   anime.speed = 1.2 * meter.get() + 0.3;
 
-  // Turn off all LEDs on mode 0
+  // 모드별로 동작이 다르다
+  //
+  // 0:  하트 가장자리를 따라 LED가 빙글빙글 돌면서 켜진다.
+  // 1:  하트가 두근두근거리면서 켜진다.
+  // 2:  하트가 켜져있는채로 유지된다.
+  // 3:  하트가 꺼진다.
   switch (mode) {
   case 0: {
-    // 회전화면서 빛이 켜짐
     constexpr auto len = length(LEDs);
     const auto idx_ = size_t(anime.pos * Animator::type(len));
     const auto idx = idx_ >= len ? len : idx_; // Prevent memory error
@@ -59,17 +63,16 @@ void loop() {
     digitalWrite(LEDs[idx], HIGH);
     for (const auto i: range(idx + 1, len)) { digitalWrite(LEDs[i], LOW); }
     break; }
-  case 1:
-    // 하트가 깜빡깜빡거림
-    for (const auto led: LEDs) { digitalWrite(led, LOW); }
-    break;
+  case 1: {
+    const auto pos = anime.pos;
+    const auto state = 0.0 <= pos && pos < 0.15 || 0.25 <= pos && pos < 0.33 ? HIGH : LOW;
+    for (const auto led: LEDs) { digitalWrite(led, state); }
+    break; }
   case 2:
-    // 전부 끔
-    for (const auto led: LEDs) { digitalWrite(led, LOW); }
+    for (const auto led: LEDs) { digitalWrite(led, HIGH); }
     break;
   case 3:
-    // 전부 켬
-    for (const auto led: LEDs) { digitalWrite(led, HIGH); }
+    for (const auto led: LEDs) { digitalWrite(led, LOW); }
     break;
   }
 
