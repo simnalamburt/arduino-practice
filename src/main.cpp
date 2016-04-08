@@ -1,3 +1,4 @@
+#include "util.hh"
 #include "mode.hh"
 #include "animator.hh"
 #include "analog_button.hh"
@@ -18,12 +19,15 @@ namespace {
 }
 
 void setup() {
-  for (auto led: LEDs) { pinMode(led, OUTPUT); }
+  for (const auto led: LEDs) { pinMode(led, OUTPUT); }
 
   Serial.begin(9600);
 }
 
 void loop() {
+  using util::length;
+  using util::range;
+
   // Need to be called once a every loop
   anime.onLoop();
   left.onLoop();
@@ -34,27 +38,38 @@ void loop() {
   if (left.clicked()) { --mode; }
   if (right.clicked()) { ++mode; }
 
-  // Use the value of potentiometer as a period of the animation
-  // The period will be a double ∈ [0.3, 1.5)
+  // Use the value of potentiometer as a speed of the animation. The speed will
+  // be a double ∈ [0.3, 1.5)
   anime.speed = 1.2 * meter.get() + 0.3;
 
   // Turn off all LEDs on mode 0
   switch (mode) {
-  case 0:
-    // TODO: 회전화면서 빛이 켜짐. 포텐시오미터로 속도를 조절함
-    for (auto led: LEDs) { digitalWrite(led, LOW); }
-    break;
+  case 0: {
+    // 회전화면서 빛이 켜짐
+    constexpr auto len = length(LEDs);
+    const auto idx_ = size_t(anime.pos * Animator::type(len));
+    const auto idx = idx_ >= len ? len : idx_; // Prevent memory error
+
+    // TODO: Remove debug codes
+    Serial.print("Index: ");
+    Serial.print(idx);
+    Serial.print(" \t");
+
+    for (const auto i: range(0u, idx)) { digitalWrite(LEDs[i], LOW); }
+    digitalWrite(LEDs[idx], HIGH);
+    for (const auto i: range(idx + 1, len)) { digitalWrite(LEDs[i], LOW); }
+    break; }
   case 1:
-    // TODO: 하트가 깜빡깜빡거림. 포텐시오미터로 속도를 조절함
-    for (auto led: LEDs) { digitalWrite(led, LOW); }
+    // 하트가 깜빡깜빡거림
+    for (const auto led: LEDs) { digitalWrite(led, LOW); }
     break;
   case 2:
     // 전부 끔
-    for (auto led: LEDs) { digitalWrite(led, LOW); }
+    for (const auto led: LEDs) { digitalWrite(led, LOW); }
     break;
   case 3:
     // 전부 켬
-    for (auto led: LEDs) { digitalWrite(led, HIGH); }
+    for (const auto led: LEDs) { digitalWrite(led, HIGH); }
     break;
   }
 
