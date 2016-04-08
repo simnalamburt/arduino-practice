@@ -7,7 +7,8 @@
 //     Animator ani;        // 2초 주기를 갖는 애니메이터 생성 (기본값)
 //     Animator ani { 5 };  // 5초 주기를 갖는 애니메이터 생성
 //
-//     ani.period = 15.0;   // 애니메이션 주기를 15초로 설정
+//     ani.period = 15.0;   // 애니메이션 주기를 '15s'로 설정
+//     ani.speed = 2.0;     // 애니메이션 속도를 '2 period/s'로 설정
 //
 //     void loop() {
 //       ani.onLoop();      // Must be called in every loop
@@ -33,7 +34,7 @@ struct Animator {
 
 private:
   type pos = 0.0;
-  type speed; // Should be initialized with `period` field
+  type _speed; // Should be initialized with `period` field
   decltype(millis()) prevMillis = millis();
 
   struct Period {
@@ -43,8 +44,16 @@ private:
     operator type() const { return 1.0/speed; }
   };
 
+  struct Speed {
+    type& speed;
+    Speed(type& ref): speed(ref) { }
+    type operator=(type given) { return speed = given; }
+    operator type() const { return speed; }
+  };
+
 public:
-  Period period { speed };
+  Period period { _speed };
+  Speed speed { _speed };
 
   explicit Animator(type initial_period = 2.0) {
     period = initial_period;
@@ -55,7 +64,7 @@ public:
     const auto delta = double(currentMillis - prevMillis) / 1000.0;
     prevMillis = currentMillis;
 
-    pos += speed * delta;
+    pos += _speed * delta;
 
     if (pos >= 1.0) { pos -= floor(pos); }
   }

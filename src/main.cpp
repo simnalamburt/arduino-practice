@@ -35,8 +35,8 @@ void loop() {
   if (right.clicked()) { ++mode; }
 
   // Use the value of potentiometer as a period of the animation
-  // The period will be a double ∈ [0.2, 2.5)
-  anime.period = 2.3 * meter.get() + 0.2;
+  // The period will be a double ∈ [0.3, 1.5)
+  anime.speed = 1.2 * meter.get() + 0.3;
 
   // Turn off all LEDs on mode 0
   switch (mode) {
