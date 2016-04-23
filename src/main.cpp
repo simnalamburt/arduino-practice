@@ -6,16 +6,8 @@
 #include "Arduino.h"
 
 namespace {
-  Mode<4> mode;
-  Animator anime;
-
-  // Digital pin numbers of connected LEDs
   constexpr uint8_t LEDs[] { 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13 };
-
-  // Input hardwares
-  Potentiometer<A0> meter;
-  AnalogButton<A1> left;
-  AnalogButton<A2> right;
+  decltype(analogRead(A0)) v1_min = 1023, v1_max = 0, v2_min = 1024, v2_max = 0;
 }
 
 void setup() {
@@ -25,63 +17,29 @@ void setup() {
 }
 
 void loop() {
-  using util::length;
-  using util::range;
+  const auto v1 = analogRead(A1);
+  const auto v2 = analogRead(A2);
 
-  // Need to be called once a every loop
-  anime.onLoop();
-  left.onLoop();
-  right.onLoop();
+  if (v1 < v1_min) { v1_min = v1; }
+  if (v1_max < v1) { v1_max = v1; }
+  if (v2 < v2_min) { v2_min = v2; }
+  if (v2_max < v2) { v2_max = v2; }
 
+  const auto lit = v1 <= 600 ? HIGH : LOW;
+  for (const auto led: LEDs) { digitalWrite(led, lit); }
 
-  // Update mode
-  if (left.clicked()) { --mode; }
-  if (right.clicked()) { ++mode; }
-
-  // Use the value of potentiometer as a speed of the animation. The speed will
-  // be a double ∈ [0.7, 3.1)
-  anime.speed = 2.4 * meter.get() + 0.7;
-
-  // 모드별로 동작이 다르다
-  //
-  // 0:  하트 가장자리를 따라 LED가 빙글빙글 돌면서 켜진다.
-  // 1:  하트가 두근두근거리면서 켜진다.
-  // 2:  하트가 켜져있는채로 유지된다.
-  // 3:  하트가 꺼진다.
-  switch (mode) {
-  case 0: {
-    constexpr auto len = length(LEDs);
-    const auto idx_ = size_t(anime.pos * Animator::type(len));
-    const auto idx = idx_ >= len ? len : idx_; // Prevent memory error
-
-    // TODO: Remove debug codes
-    Serial.print("Index: ");
-    Serial.print(idx);
-    Serial.print(" \t");
-
-    for (const auto i: range(0u, idx)) { digitalWrite(LEDs[i], LOW); }
-    digitalWrite(LEDs[idx], HIGH);
-    for (const auto i: range(idx + 1, len)) { digitalWrite(LEDs[i], LOW); }
-    break; }
-  case 1: {
-    const auto pos = anime.pos;
-    const auto state = (0.00 <= pos && pos < 0.15) ||
-                       (0.25 <= pos && pos < 0.33) ? HIGH : LOW;
-    for (const auto led: LEDs) { digitalWrite(led, state); }
-    break; }
-  case 2:
-    for (const auto led: LEDs) { digitalWrite(led, HIGH); }
-    break;
-  case 3:
-    for (const auto led: LEDs) { digitalWrite(led, LOW); }
-    break;
-  }
-
-  // TODO: Remove debug codes
-  Serial.print("Period: ");
-  Serial.print(anime.period);
-  Serial.print(" \tMode: ");
-  Serial.print(mode);
-  Serial.print(" \tPos: ");
-  Serial.println(anime.pos);
+  Serial.print("Pull Down: ");
+  Serial.print(v1);
+  Serial.print(" (");
+  Serial.print(v1_min);
+  Serial.print(", ");
+  Serial.print(v1_max);
+  Serial.print(")      Pull Up: ");
+  Serial.print(v2);
+  Serial.print(" (");
+  Serial.print(v2_min);
+  Serial.print(", ");
+  Serial.print(v2_max);
+  Serial.println(')');
+  delay(50);
 }
