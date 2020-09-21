@@ -1,4 +1,4 @@
-Arduino Practice [![Build Status]][travis]
+Arduino Practice
 ========
 Please use [PlatformIO](http://platformio.org/) to build and execute project.
 ```bash
@@ -14,6 +14,3 @@ platformio run -t upload
 # Monitor serialports
 platformio serialports monitor
 ```
-
-[Build Status]: https://travis-ci.org/simnalamburt/arduino-practice.svg?branch=master
-[travis]: https://travis-ci.org/simnalamburt/arduino-practice
